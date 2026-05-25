@@ -6,7 +6,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-export class SimpleUrl implements INodeType {
+export class Simpleurl implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'SimpleURL',
 		name: 'simpleUrl',
@@ -529,6 +529,7 @@ export class SimpleUrl implements INodeType {
 						const url = this.getNodeParameter('url', i) as string;
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as any;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const body: any = {
 							url,
@@ -545,6 +546,7 @@ export class SimpleUrl implements INodeType {
 							'simpleUrlApi',
 							{
 								method: 'POST',
+								baseURL: credentials.baseUrl as string,
 								url: '/api/v1/short-urls',
 								body,
 								json: true,
@@ -557,12 +559,14 @@ export class SimpleUrl implements INodeType {
 						// Get short URL
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const domain = this.getNodeParameter('domain', i) as string;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const response = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'simpleUrlApi',
 							{
 								method: 'GET',
+								baseURL: credentials.baseUrl as string,
 								url: `/api/v1/short-urls/${keyword}`,
 								qs: { domain },
 								json: true,
@@ -575,6 +579,7 @@ export class SimpleUrl implements INodeType {
 						// List short URLs
 						const returnAll = this.getNodeParameter('returnAll', i);
 						const additionalFields = this.getNodeParameter('additionalFields', i) as any;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const qs: any = {
 							page: 1,
@@ -589,6 +594,7 @@ export class SimpleUrl implements INodeType {
 							'simpleUrlApi',
 							{
 								method: 'GET',
+								baseURL: credentials.baseUrl as string,
 								url: '/api/v1/short-urls',
 								qs,
 								json: true,
@@ -602,6 +608,7 @@ export class SimpleUrl implements INodeType {
 						// Update short URL
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as any;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const body: any = {};
 						if (updateFields.url) body.url = updateFields.url;
@@ -613,6 +620,7 @@ export class SimpleUrl implements INodeType {
 							'simpleUrlApi',
 							{
 								method: 'PUT',
+								baseURL: credentials.baseUrl as string,
 								url: `/api/v1/short-urls/${keyword}`,
 								body,
 								json: true,
@@ -625,12 +633,14 @@ export class SimpleUrl implements INodeType {
 						// Delete short URL
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const domain = this.getNodeParameter('domain', i) as string;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const response = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'simpleUrlApi',
 							{
 								method: 'DELETE',
+								baseURL: credentials.baseUrl as string,
 								url: `/api/v1/short-urls/${keyword}`,
 								qs: { domain },
 								json: true,
@@ -642,6 +652,7 @@ export class SimpleUrl implements INodeType {
 					} else if (operation === 'batchCreate') {
 						// Batch create short URLs
 						const urls = this.getNodeParameter('urls', i) as any;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const body = {
 							urls: urls.urlValues || [],
@@ -652,6 +663,7 @@ export class SimpleUrl implements INodeType {
 							'simpleUrlApi',
 							{
 								method: 'POST',
+								baseURL: credentials.baseUrl as string,
 								url: '/api/v1/short-urls/batch',
 								body,
 								json: true,
@@ -666,6 +678,7 @@ export class SimpleUrl implements INodeType {
 						// Get analytics
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as any;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const qs: any = {};
 						if (additionalFields.domain) qs.domain = additionalFields.domain;
@@ -681,6 +694,7 @@ export class SimpleUrl implements INodeType {
 							'simpleUrlApi',
 							{
 								method: 'GET',
+								baseURL: credentials.baseUrl as string,
 								url: `/api/v1/analytics/${keyword}`,
 								qs,
 								json: true,
@@ -695,13 +709,15 @@ export class SimpleUrl implements INodeType {
 						// Generate QR code
 						const keyword = this.getNodeParameter('keyword', i) as string;
 						const domain = this.getNodeParameter('domain', i) as string;
+						const credentials = await this.getCredentials('simpleUrlApi');
 
 						const response = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'simpleUrlApi',
 							{
 								method: 'POST',
-								url: `/api/v1/qr-codes/${keyword}`,
+								baseURL: credentials.baseUrl as string,
+								url: `/api/v1/url-shortener/qr-codes/${keyword}`,
 								body: { domain },
 								json: true,
 							},
@@ -711,12 +727,15 @@ export class SimpleUrl implements INodeType {
 
 					} else if (operation === 'list') {
 						// List QR codes
+						const credentials = await this.getCredentials('simpleUrlApi');
+						
 						const response = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'simpleUrlApi',
 							{
 								method: 'GET',
-								url: '/api/v1/qr-codes',
+								baseURL: credentials.baseUrl as string,
+								url: '/api/v1/url-shortener/qr-codes',
 								qs: { page: 1, pageSize: 100 },
 								json: true,
 							},
@@ -729,7 +748,8 @@ export class SimpleUrl implements INodeType {
 
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({ json: { error: error.message }, pairedItem: { item: i } });
+					const errorMessage = error instanceof Error ? error.message : String(error);
+					returnData.push({ json: { error: errorMessage }, pairedItem: { item: i } });
 					continue;
 				}
 				throw new NodeOperationError(this.getNode(), error as Error, {

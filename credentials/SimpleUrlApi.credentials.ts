@@ -8,7 +8,7 @@ import {
 export class SimpleUrlApi implements ICredentialType {
 	name = 'simpleUrlApi';
 	displayName = 'SimpleURL API';
-	documentationUrl = 'https://simpleurl.tech/docs/api';
+	documentationUrl = 'https://simpleurl.tech/docs/api-keys';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -19,8 +19,8 @@ export class SimpleUrlApi implements ICredentialType {
 			},
 			default: '',
 			required: true,
-			description: 'Your SimpleURL API key (starts with sk_live_)',
-			placeholder: 'sk_live_abc123...',
+			placeholder: 'Enter your API key',
+			description: 'Your SimpleURL API key from https://simpleurl.tech/dashboard/api-keys',
 		},
 		{
 			displayName: 'Base URL',
@@ -28,12 +28,10 @@ export class SimpleUrlApi implements ICredentialType {
 			type: 'string',
 			default: 'https://simpleurl.tech',
 			required: true,
-			description: 'The base URL of your SimpleURL instance',
+			description: 'The base URL of your SimpleURL instance (without /api/v1)',
 		},
 	];
 
-	// This allows the credential to be used by other parts of n8n
-	// stating how this credential is injected as part of the request
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
 		properties: {
@@ -43,11 +41,10 @@ export class SimpleUrlApi implements ICredentialType {
 		},
 	};
 
-	// The block below tells how this credential can be tested
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.baseUrl}}',
-			url: '/api/v1/short-urls?page=1&pageSize=1',
+			url: '/api/v1/short-urls',
 			method: 'GET',
 		},
 	};

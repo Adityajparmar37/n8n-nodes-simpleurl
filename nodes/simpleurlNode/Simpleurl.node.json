@@ -1,0 +1,20 @@
+{
+	"node": "n8n-nodes-base.Simpleurl",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": [
+		"Miscellaneous"
+	],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://simpleurl.tech/docs/api-keys"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://simpleurl.tech/docs"
+			}
+		]
+	}
+}
