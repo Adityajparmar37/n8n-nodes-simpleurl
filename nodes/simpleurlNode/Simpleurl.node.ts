@@ -717,8 +717,8 @@ export class Simpleurl implements INodeType {
 							{
 								method: 'POST',
 								baseURL: credentials.baseUrl as string,
-								url: `/api/v1/url-shortener/qr-codes/${keyword}`,
-								body: { domain },
+								url: `/api/v1/qr-codes`,
+								body: { keyword, domain },
 								json: true,
 							},
 						);
@@ -735,7 +735,7 @@ export class Simpleurl implements INodeType {
 							{
 								method: 'GET',
 								baseURL: credentials.baseUrl as string,
-								url: '/api/v1/url-shortener/qr-codes',
+								url: '/api/v1/qr-codes',
 								qs: { page: 1, pageSize: 100 },
 								json: true,
 							},
