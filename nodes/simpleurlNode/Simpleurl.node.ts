@@ -10,7 +10,7 @@ export class Simpleurl implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'SimpleURL',
 		name: 'simpleUrl',
-		icon: 'file:simpleurl.svg',
+		icon: 'file:SimpleurlNodeLogo.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
